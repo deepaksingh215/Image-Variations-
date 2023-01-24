@@ -1,10 +1,12 @@
 from rest_framework.response import Response
+from django.shortcuts import render
 from rest_framework import status
 from rest_framework.views import APIView
 from account.serializers import UserLoginSerializer, UserRegistrationSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import TemplateHTMLRenderer
+from django.contrib import messages
 
 # Generate Token Manually
 def get_tokens_for_user(user):
@@ -15,14 +17,32 @@ def get_tokens_for_user(user):
   }
 
 class UserRegistrationView(APIView):
+  renderer_classes = [TemplateHTMLRenderer]
+  template_name = 'app/register.html'
+  style = {'template_pack': 'rest_framework/vertical/'}  
+  
+  def get(self, request, format=None):
+    serializer = UserRegistrationSerializer()
+    return Response({'serializer': serializer, 'style': self.style})
+
   def post(self, request, format=None):
     serializer = UserRegistrationSerializer(data=request.data)
+    
     serializer.is_valid(raise_exception=True)
+    messages.success(request, 'registerd successfully')
     user = serializer.save()
-    token = get_tokens_for_user(user)
-    return Response({'token':token, 'msg':'Registration Successful'}, status=status.HTTP_201_CREATED)
+
+    return Response({'serializer': serializer, 'style': self.style})
 
 class UserLoginView(APIView):
+  renderer_classes = [TemplateHTMLRenderer]
+  template_name = 'app/login.html'
+  style = {'template_pack': 'rest_framework/vertical/'}  
+
+  def get(self, request, format=None):
+    serializer = UserLoginSerializer()
+    return Response({'serializer': serializer, 'style': self.style})
+
   def post(self, request, format=None):
     serializer = UserLoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -30,7 +50,10 @@ class UserLoginView(APIView):
     password = serializer.data.get('password')
     user = authenticate(email=email, password=password)
     if user is not None:
-      token = get_tokens_for_user(user)
-      return Response({'token':token, 'msg':'Login Success'}, status=status.HTTP_200_OK)
+      return Response({'serializer': serializer, 'style': self.style})
     else:
-      return Response({'errors':{'non_field_errors':['Email or Password is not Valid']}}, status=status.HTTP_404_NOT_FOUND)
+      return Response({'errors':{'non_field_errors':['Email or Password is not Valid']}})
+
+def home(request):
+ return render(request, 'app/home.html')
+ 

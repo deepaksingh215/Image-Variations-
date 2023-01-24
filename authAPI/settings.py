@@ -74,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'djangoauthapi1.wsgi.application'
+WSGI_APPLICATION = 'authAPI.wsgi.application'
 
 
 # Database
@@ -172,3 +172,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+REGISTER_REDIECT_URL = '/home/'
+LOGIN_REDIECT_URL = '/home/'
