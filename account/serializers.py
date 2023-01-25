@@ -3,6 +3,8 @@ from account.models import User
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.http import HttpResponseRedirect
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
   # We are writing this becoz we need confirm password field in our Registratin Request
@@ -24,6 +26,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
   def create(self, validate_data):
     return User.objects.create_user(**validate_data)
+
+  def create(self, validated_data):
+    # Perform create logic here
+    # ...
+    return HttpResponseRedirect(self.context.get('success_url'))
 
 class UserLoginSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(max_length=255)

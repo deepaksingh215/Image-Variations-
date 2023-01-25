@@ -1,5 +1,6 @@
 from rest_framework.response import Response
-from django.shortcuts import render
+
+from django.shortcuts import render , redirect
 from rest_framework import status
 from rest_framework.views import APIView
 from account.serializers import UserLoginSerializer, UserRegistrationSerializer
@@ -28,10 +29,12 @@ class UserRegistrationView(APIView):
   def post(self, request, format=None):
     serializer = UserRegistrationSerializer(data=request.data)
     
-    serializer.is_valid(raise_exception=True)
-    messages.success(request, 'registerd successfully')
-    user = serializer.save()
+    if serializer.is_valid(raise_exception=True):
 
+      user = serializer.save()
+      messages.success(request, 'Registration Successful')
+      return redirect('login')
+    
     return Response({'serializer': serializer, 'style': self.style})
 
 class UserLoginView(APIView):
@@ -45,11 +48,14 @@ class UserLoginView(APIView):
 
   def post(self, request, format=None):
     serializer = UserLoginSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    email = serializer.data.get('email')
-    password = serializer.data.get('password')
-    user = authenticate(email=email, password=password)
-    if user is not None:
+    if serializer.is_valid(raise_exception=True):
+      email = serializer.data.get('email')
+      password = serializer.data.get('password')
+      user = authenticate(email=email, password=password)
+      messages.success(request, 'Registration Successful')
+      return redirect('home')
+
+    if user is not None:  
       return Response({'serializer': serializer, 'style': self.style})
     else:
       return Response({'errors':{'non_field_errors':['Email or Password is not Valid']}})

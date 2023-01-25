@@ -17,12 +17,7 @@
    <form action="" method="post" novalidate class="shadow p-5">
       
       
-      {% if messages %}
-         {% for message in messages %}
-            <p {% if message.tags %} class='alert alert-{{message.tags}} mb-5' 
-            {% endif%} >{{ message }}</p>
-         {% endfor %}            
-      {% endif %}
+      
       {% csrf_token %} 
 
       {% render_form serializer template_pack='rest_framework/vertical' %}
