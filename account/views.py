@@ -32,9 +32,10 @@ class UserRegistrationView(APIView):
     if serializer.is_valid(raise_exception=True):
 
       user = serializer.save()
+      
       messages.success(request, 'Registration Successful')
       return redirect('login')
-    
+
     return Response({'serializer': serializer, 'style': self.style})
 
 class UserLoginView(APIView):
@@ -55,11 +56,11 @@ class UserLoginView(APIView):
       messages.success(request, 'Registration Successful')
       return redirect('home')
 
-    if user is not None:  
+    if user is not None: 
+      token = get_tokens_for_user(user) 
       return Response({'serializer': serializer, 'style': self.style})
     else:
       return Response({'errors':{'non_field_errors':['Email or Password is not Valid']}})
 
-def home(request):
- return render(request, 'app/home.html')
+
  
